@@ -1,0 +1,133 @@
+# expected variables:
+# PGVERSION
+# i2b2_VERSION
+# i2b2_VERSION_SHORT
+# DB_HOST
+# JBOSS_PORT
+
+
+i2b2_db:
+  image: "floe/postgres_citusdb_1.3:${PGVERSION}"
+  ports:
+   - "127.0.0.1:5432:5432"
+  volumes_from:
+    - "i2b2_$i2b2_VERSION_SHORT-postgres_storage-${PGVERSION}"
+  environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+  ulimits:
+    nproc: 65000
+    nofile:
+      soft: 20000
+      hard: 40000
+  privileged: false
+  cpuset: 0,1
+  cpu_shares: 1024
+  mem_limit: 1g
+  memswap_limit: 1500m
+  hostname: db
+  log_driver: "json-file"
+  # log_opt:
+  #   max-size: 5m
+  #   max-file: 5
+
+
+
+i2b2:
+#  image: "floe/i2b2_core-wildfly9.0.2.final-axis1.6.3:$i2b2_VERSION"
+#  image: floe/i2b2_core-as7.1.1.final-axis1.6.3:1.7.06
+  #image: floe/i2b2_as:1706
+  image: floe/i2b2_wildfly902:1706
+  command: /opt/jboss/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+  volumes:
+    - /var/www/html/webclient/js-i2b2/cells/plugins/GIRIPlugin/assets
+  ports:
+    - "9090:${JBOSS_PORT}"
+    - "9990:9990"
+  links:
+    - i2b2_db:db
+  # extra_hosts:
+  #   - "db:${DB_HOST}"
+  # environment:
+  #   - DB_HOST="${DB_HOST}"
+  ulimits:
+    nproc: 65000
+    nofile:
+      soft: 20000
+      hard: 40000
+  privileged: false
+  cpuset: 0,1
+  cpu_shares: 1024
+  mem_limit: 1g
+  memswap_limit: 1500m
+  hostname: i2b2
+  log_driver: "json-file"
+  # log_opt:
+  #   max-size: 5m
+  #   max-file: 5
+
+
+i2b2_db_settings:
+  image: "floe/i2b2$i2b2_VERSION_SHORT-setting_pg:$PGVERSION"
+  environment:
+    - HIVE_ID=dexhelpp
+    - "JBOSS_PORT=${JBOSS_PORT}"
+    - PGPASSWORD=postgres
+    #- "PG_IP=${DB_HOST}"
+    #- i2b2_IP=172.17.0.3
+  links:
+    - i2b2:i2b2
+    - i2b2_db:db
+
+
+i2b2_web:
+  image: floe/i2b2_webserver:1.7.04
+  volumes_from:
+    - i2b2:rw
+  links:
+    - i2b2:i2b2
+  ports:
+    - 80:80
+  ulimits:
+    nproc: 65000
+    nofile:
+      soft: 20000
+      hard: 40000
+  privileged: false
+  cpuset: 0,1
+  cpu_shares: 1024
+  mem_limit: 1g
+  memswap_limit: 1500m
+  hostname: i2b2_web
+  log_driver: "json-file"
+  # log_opt:
+  #   max-size: 5m
+  #   max-file: 5
+
+
+cadvisor:
+  image: google/cadvisor:latest
+  volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  ports:
+    - "8080:8080"
+  restart: always
+  cpuset: 0,1
+  cpu_shares: 512
+  mem_limit: 1g
+
+
+dockerui:
+  image: dockerui/dockerui
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+  ports:
+    - "9000:9000"
+  privileged: true
+  restart: always
+  cpuset: 0,1
+  cpu_shares: 512
+  mem_limit: 1g

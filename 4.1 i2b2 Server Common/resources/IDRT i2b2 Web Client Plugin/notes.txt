@@ -1,0 +1,10 @@
+
+# Server Cells
+git clone https://dev.mi.med.uni-goettingen.de/stash/scm/idrt/de.umg.mi.idrt.i2b2.cell.git
+
+# Server Builds
+https://dev.mi.med.uni-goettingen.de/bamboo/browse/IDRT-WEB
+
+# Webserver
+git clone https://dev.mi.med.uni-goettingen.de/stash/scm/idrt/hiwi_webclient.git
+

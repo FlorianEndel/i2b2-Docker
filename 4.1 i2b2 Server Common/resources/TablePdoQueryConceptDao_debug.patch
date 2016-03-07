@@ -1,0 +1,56 @@
+--- TablePdoQueryConceptDao_orig.java	2015-10-21 20:41:09.000000000 +0200
++++ TablePdoQueryConceptDao.java	2015-10-21 20:45:19.844304533 +0200
+@@ -74,7 +74,7 @@
+ 				factTempTable = this.getDbSchemaName()
+ 						+ FactRelatedQueryHandler.TEMP_FACT_PARAM_TABLE;
+ 			} else if (serverType.equalsIgnoreCase(DAOFactoryHelper.SQLSERVER) || serverType.equalsIgnoreCase(DAOFactoryHelper.POSTGRESQL )) {
+-				log.debug("creating temp table");
++				log.info("creating temp table");
+ 				java.sql.Statement tempStmt = conn.createStatement();
+ 				factTempTable = this.getDbSchemaName()
+ 						+ SQLServerFactRelatedQueryHandler.TEMP_FACT_PARAM_TABLE;
+@@ -87,7 +87,7 @@
+ 						+ factTempTable
+ 						+ " ( set_index int, char_param1 varchar(500) )";
+ 				tempStmt.executeUpdate(createTempInputListTable);
+-				log.debug("created temp table" + factTempTable);
++				log.info("created temp table" + factTempTable);
+ 			}
+ 			// if the inputlist is enumeration, then upload the enumerated input
+ 			// to temp table.
+@@ -103,14 +103,14 @@
+ 				insertSql = " insert into "
+ 						+ factTempTable;
+ 				
+-				if (serverType.equalsIgnoreCase(DAOFactoryHelper.POSTGRESQL))
+-					insertSql = " CAST(coalesce(char_param1, '0') as integer) ";
++				//if (serverType.equalsIgnoreCase(DAOFactoryHelper.POSTGRESQL))
++				//	insertSql = " CAST(coalesce(char_param1, '0') as integer) ";
+ 				//else 
+ 				//	insertSql += " (char_param1) ";
+ 				insertSql += "(char_param1) select distinct obs_concept_cd from ( "
+ 						+ panelSql + ") b";
+ 
+-				log.debug("Executing SQL [ " + insertSql + "]");
++				log.info("Executing SQL [ " + insertSql + "]");
+ 				sqlParamCount = sqlParamCountList.get(i++);
+ 				// conn.createStatement().executeUpdate(insertSql);
+ 				executeTotalSql(insertSql, conn, sqlParamCount,
+@@ -124,7 +124,7 @@
+ 					+ getDbSchemaName()
+ 					+ "concept_dimension concept where concept_cd in (select distinct char_param1 from "
+ 					+ factTempTable + ") order by concept_path";
+-			log.debug("Executing SQL [" + finalSql + "]");
++			log.info("Executing SQL [" + finalSql + "]");
+ 			
+ 
+ 			query = conn.prepareStatement(finalSql);
+@@ -169,7 +169,7 @@
+ 
+ 		PreparedStatement stmt = conn.prepareStatement(totalSql);
+ 
+-		log.debug(totalSql + " [ " + sqlParamCount + " ]");
++		log.info(totalSql + " [ " + sqlParamCount + " ]");
+ 		if (inputOptionListHandler.isCollectionId()) {
+ 			for (int i = 1; i <= sqlParamCount; i++) {
+ 				stmt.setInt(i, Integer.parseInt(inputOptionListHandler

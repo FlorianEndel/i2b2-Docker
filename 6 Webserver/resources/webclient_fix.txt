@@ -1,0 +1,10 @@
+cd /var/www/html/webclient/js-i2b2
+grep -rnw . -e toJSON
+./cells/plugins/standard/Dem2Set/Dem2Set_ctrlr.js:125:  i2b2.Dem2Set.model.sumCounts[which] = eval("("+hData.toJSON()+")");
+./cells/plugins/standard/Dem1Set/Dem1Set_ctrlr.js:125:                  i2b2.Dem1Set.model.sumCounts = eval("("+hData.toJSON()+")");
+
+
+cd /var/www/html/webclient/js-i2b2/cells/plugins/standard/Dem1Set
+sed -i 's/+hData.toJSON()+/ + Object.toJSON(hData) +/g' Dem1Set_ctrlr.js
+cd /var/www/html/webclient/js-i2b2/cells/plugins/standard/Dem2Set
+sed -i 's/+hData.toJSON()+/ + Object.toJSON(hData) +/g' Dem2Set_ctrlr.js

@@ -1,0 +1,22 @@
+	<!-- _PROJECT_NAME_ -->
+
+	<datasource jta="false" jndi-name="java:/_CELL__PROJECT_NAME_"
+		pool-name="_CELL__PROJECT_NAME_" enabled="true" use-ccm="false">
+		<connection-url>_CON_URL_</connection-url>
+		<driver-class>_DB_DRIVER_CLASS_</driver-class>
+		<driver>_DB_DRIVER_</driver>
+		<security>
+			<user-name>_DB_USER_</user-name>
+			<password>_DB_PASS_</password>
+		</security>
+		<validation>
+			<validate-on-match>false</validate-on-match>
+			<background-validation>false</background-validation>
+		</validation>
+		<statement>
+			<share-prepared-statements>false</share-prepared-statements>
+		</statement>
+	</datasource>
+
+
+</datasources>

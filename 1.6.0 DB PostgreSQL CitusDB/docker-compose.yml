@@ -1,0 +1,19 @@
+pgData:
+  image: busybox
+  volumes:
+    - /pgData
+    - /var/lib/postgresql
+Pg:
+  image: floe/postgres_citusdb_1.3:9.4
+  ports:
+   - "127.0.0.1:5432:5432"
+  volumes_from:
+    - pgData
+  environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+  #cpu_shares: 1
+  mem_limit: 300m
+  memswap_limit: -1
+  cpuset: "0-1"
+  restart: on-failure:10
