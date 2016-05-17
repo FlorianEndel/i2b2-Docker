@@ -3,34 +3,35 @@ JBOSS_PORT=9090
 JBOSS_PORT_AJP=9009
 LOG_LEVEL=INFO # INFO, DEBUG, WARN, ERROR
 
-i2b2_VERSION=1.7.06
-i2b2_VERSION_SHORT=1706
+i2b2_VERSIONS=( '1.7.07' '1.7.06' '1.7.05' '1.7.04' ) # git since 1.7.07
+i2b2_VERSION=${i2b2_VERSIONS[1]}
+i2b2_VERSION_SHORT="${i2b2_VERSION//.}"
 
 # Set Ant Version [0='1.8.4', 1='1.9.6']
-ANT_VERSIONS=( '1.8.4' '1.9.6' ) # 1.8.4 <-- i2b2
-ANT_VERSION=${ANT_VERSIONS[1]}
+ANT_VERSIONS=( '1.9.7' '1.9.6' '1.8.4' ) # 1.8.4 <-- i2b2
+ANT_VERSION=${ANT_VERSIONS[0]}
 
 # Set Axis2 Version [0='1.6.2', 1='1.6.3']
-AXIS_VERSIONS=( '1.6.2' '1.6.3' ) # 1.6.2 <-- i2b2
-AXIS_VERSION=${AXIS_VERSIONS[1]}
+AXIS_VERSIONS=( '1.7.2' '1.7.1' '1.7.0' '1.6.4'  '1.6.3' '1.6.2' ) # 1.6.2 <-- i2b2
+AXIS_VERSION=${AXIS_VERSIONS[0]}
 
 # PostgreSQL Database
-PGVERSIONS=( '9.3' '9.4' )
+PGVERSIONS=( '9.3' '9.4' '9.5')
 
 # JBoss Wildfly
-WILDFLY_VERSIONS=( '8.2.1.Final' '9.0.2.Final' '10.0.0.CR4' )
+WILDFLY_VERSIONS=( '8.2.1.Final' '9.0.2.Final' '10.0.0.Final' )
 
 
 
 #######################
-## Base Images with JDK
+## CentOS: Base Images with JDK
 cd "$WORKDIR/1.1a i2b2 Base CentOS"
 JAVA_CENTOS=( 'java-1.7.0-openjdk-devel' 'java-1.8.0-openjdk-devel' )
 
-docker build --tag=floe/i2b2_base_centos:jdk7 \
+docker build --pull --tag=floe/i2b2_base_centos:jdk7 \
   --build-arg JAVA_INSTALL=${JAVA_CENTOS[0]} --rm=true .
 
-docker build --tag=floe/i2b2_base_centos:jdk8 \
+docker build --pull --tag=floe/i2b2_base_centos:jdk8 \
   --build-arg JAVA_INSTALL=${JAVA_CENTOS[1]} --rm=true .
 
 
@@ -38,10 +39,10 @@ docker build --tag=floe/i2b2_base_centos:jdk8 \
 cd "$WORKDIR/1.1b i2b2 Base Phusion"
 JAVA_ORACLE=( '7' '8' )
 
-docker build --tag=floe/i2b2_base_phusion:jdk7 \
+docker build --pull --tag=floe/i2b2_base_phusion:jdk7 \
   --build-arg JAVA_VERSION=${JAVA_ORACLE[0]} --rm=true .
 
-docker build --tag=floe/i2b2_base_phusion:jdk8 \
+docker build --pull --tag=floe/i2b2_base_phusion:jdk8 \
   --build-arg JAVA_VERSION=${JAVA_ORACLE[1]} --rm=true .
 
 
@@ -49,14 +50,12 @@ docker build --tag=floe/i2b2_base_phusion:jdk8 \
 cd "$WORKDIR/1.1c i2b2 Base Ubuntu"
 JAVA_UBUNTU=( 'openjdk-7-jdk' 'openjdk-8-jdk' )
 
-docker build --tag=floe/i2b2_base_ubuntu:jdk7 \
+docker build --pull --tag=floe/i2b2_base_ubuntu:jdk7 \
   --build-arg JAVA_INSTALL=${JAVA_UBUNTU[0]} --rm=true .
 
-docker build --tag=floe/i2b2_base_ubuntu:jdk8 \
+docker build --pull --tag=floe/i2b2_base_ubuntu:jdk8 \
   --build-arg JAVA_INSTALL=${JAVA_UBUNTU[1]} --rm=true .
 
-# sed -i 's/JAVA_INSTALL=.*/JAVA_INSTALL=openjdk-8-jdk/g' Dockerfile
-# docker build --tag=floe/i2b2_base_phusion:jdk8 --rm=true .
 
 
 
@@ -70,6 +69,7 @@ docker build --tag=floe/jboss_as:7.1.1.Final \
   --build-arg JBOSS_LOG_LEVEL=${LOG_LEVEL} \
   --rm=true .
 
+## Test
 # docker run --name=jboss_as -it --rm=true -p 8080:$JBOSS_PORT -p 9999:9990 \
 #   floe/jboss_as:7.1.1.Final
 # http://127.0.0.1:8080
@@ -88,7 +88,7 @@ do
     --rm=true .
 done
 
-# Test
+## Test
 # docker run --name=wildfly -it --rm=true -p 8080:$JBOSS_PORT -p 9990:9990  \
 #   floe/jboss_wildfly:${WILDFLY_VERSIONS[2]}
 # http://127.0.0.1:8080
@@ -116,7 +116,7 @@ do
     --rm=true .
 done
 
-# Test
+## Test
 # docker run --name=ant -it --rm=true \
 #   floe/jboss_wildfly_ant$ANT_VERSION:${WILDFLY_VERSIONS[0]} ant -version
 
@@ -143,6 +143,7 @@ do
       --rm=true .
 done
 
+## Test
 # docker run --name=axis2 -it --rm=true -p 8080:$JBOSS_PORT -p 9999:9990 \
 #   floe/jboss_wildfly_axis$AXIS_VERSION:${WILDFLY_VERSIONS[1]} /bin/bash
   # floe/jboss_as_axis$AXIS_VERSION:7.1.1.Final
@@ -220,18 +221,21 @@ done
 ## Apache Webserver, PHP5
 cd "$WORKDIR/6 Webserver"
 
-# i2b2_VERSION=1.7.06
-# i2b2_VERSION_SHORT=1706
+# i2b2_web_VERSION=$i2b2_VERSION
+# i2b2_web_VERSION_SHORT=$i2b2_VERSION_SHORT
+
+i2b2_web_VERSION=1.7.04
+i2b2_web_VERSION_SHORT=1704
 
 # get files
 rm resources/i2b2webclient-*
 rm resources/i2b2core-src-*
-cp ../Downloads/i2b2webclient-$i2b2_VERSION_SHORT.zip ./resources/
-cp ../Downloads/i2b2core-src-$i2b2_VERSION_SHORT.zip ./resources/
+cp ../Downloads/i2b2webclient-$i2b2_web_VERSION_SHORT.zip ./resources/
+cp ../Downloads/i2b2core-src-$i2b2_web_VERSION_SHORT.zip ./resources/
 
-docker build --tag=floe/i2b2_webserver:$i2b2_VERSION \
-  --build-arg i2b2_VERSION=$i2b2_VERSION \
-  --build-arg i2b2_VERSION_SHORT=$i2b2_VERSION_SHORT \
+docker build --pull --tag=floe/i2b2_webserver:$i2b2_web_VERSION \
+  --build-arg i2b2_VERSION=$i2b2_web_VERSION \
+  --build-arg i2b2_VERSION_SHORT=$i2b2_web_VERSION_SHORT \
   --build-arg HIVE_ID=dexhelpp \
   --build-arg HIVE_NAME=dexhelpp \
   --build-arg i2b2_HOST=i2b2 \
@@ -264,18 +268,18 @@ docker run --name $DB_CONTAINER  -d \
 
 
 ## Run: i2b2 'native'
+
+# latest
+docker run --name=i2b2 -d -p 9090:$JBOSS_PORT -p 9990:9990 \
+  --link $DB_CONTAINER:db \
+  floe/i2b2_core-wildfly$WILDFLY_VERSION-axis$AXIS_VERSION:$i2b2_VERSION
+  # floe/i2b2_core-wildfly10.0.0.final-axis1.7.2:1.7.06
+
+# recommended
 docker run --name=i2b2 -d -p 9090:$JBOSS_PORT -p 9990:9990 \
   --link $DB_CONTAINER:db \
   floe/i2b2_core-as7.1.1.final-axis$AXIS_VERSION:$i2b2_VERSION
 
-  floe/i2b2_core-as7.1.1.final-axis1.6.2:1.7.06
-  floe/i2b2_core-as7.1.1.final-axis1.6.3:$i2b2_VERSION
-  floe/i2b2_core-wildfly8.2.1.final-axis1.6.2:1.7.06
-  floe/i2b2_core-wildfly8.2.1.final-axis1.6.3:1.7.06
-  floe/i2b2_core-wildfly9.0.2.final-axis1.6.2:1.7.04
-  floe/i2b2_core-wildfly9.0.2.final-axis1.6.3:1.7.06
-  floe/i2b2_core-wildfly10.0.0.cr4-axis1.6.2:1.7.06
-  floe/i2b2_core-wildfly10.0.0.cr4-axis1.6.3:1.7.06
 
 # docker inspect i2b2 | grep IPAddress
 # docker exec -it i2b2 /bin/bash

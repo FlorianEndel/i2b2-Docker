@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.9.17
+FROM phusion/baseimage:0.9.18
 # https://github.com/phusion/baseimage-docker/blob/master/Changelog.md#0917-release-date-2015-07-15
 
 MAINTAINER Florian Endel <florian@endel.at>

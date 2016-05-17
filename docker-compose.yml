@@ -37,7 +37,8 @@ i2b2:
 #  image: "floe/i2b2_core-wildfly9.0.2.final-axis1.6.3:$i2b2_VERSION"
 #  image: floe/i2b2_core-as7.1.1.final-axis1.6.3:1.7.06
   #image: floe/i2b2_as:1706
-  image: floe/i2b2_wildfly902:1706
+  #image: floe/i2b2_wildfly902:1706
+  image: "floe/i2b2_core-wildfly10.0.0.final-axis1.7.2:$i2b2_VERSION"
   command: /opt/jboss/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
   volumes:
     - /var/www/html/webclient/js-i2b2/cells/plugins/GIRIPlugin/assets
