@@ -15,9 +15,10 @@ RUN apt-get update && \
 # install citus_fdw
 WORKDIR /tmp
 
-ARG CITUS_VERSION=1.3
+ARG CITUS_VERSION=1.4.1
 ENV CITUS_VERSION=${CITUS_VERSION}
 
+# https://github.com/citusdata/cstore_fdw/releases
 RUN wget https://github.com/citusdata/cstore_fdw/archive/v${CITUS_VERSION}.zip && \
     unzip v${CITUS_VERSION}.zip && \
     rm v${CITUS_VERSION}.zip && \
